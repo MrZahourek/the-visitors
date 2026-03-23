@@ -6,13 +6,15 @@ const sizes = {
     height: 540
 };
 
-const WORLD_WIDTH = 2000;   // how wide your full scene is
+const WORLD_WIDTH = 1920;   // how wide your full scene is
 const EDGE_ZONE = 80;       // px from edge that triggers scrolling
 const SCROLL_SPEED = 6;     // px per frame
 
 class GameScene extends Phaser.Scene {
     constructor() {
         super("scene-game");
+        this.cursorX;
+        this.cursorY;
     }
 
     preload() {
@@ -22,28 +24,28 @@ class GameScene extends Phaser.Scene {
 
     create() {
         // Set world bounds — wide but locked vertically
-        this.physics.world.setBounds(0, 0, WORLD_WIDTH, sizes.height);
+        this.physics.world.setBounds(0, 0, WORLD_WIDTH, sizes.height, true, true, true, false);
 
         // Camera sees only the viewport, can scroll horizontally
-        this.cameras.main.setBounds(0, 0, WORLD_WIDTH, sizes.height);
+        this.cameras.main.setBounds(0, 0, WORLD_WIDTH, sizes.height, true, true, true, false);
 
-        this.back = this.add.image(0, 0, "bg")
+        this.add.image(0, 0, "bg")
             .setOrigin(0, 0)
             .setScale(0.5);
 
-        this.player = this.physics.add
-            .image(100, sizes.height - 100, "basket")
-            .setOrigin(0, 0);
-        this.player.body.allowGravity = false;
-        this.player.setCollideWorldBounds(true);
+        this.cursorX = this.add.text(0, 0, this.input.activePointer.x.toString());
+        this.cursorY = this.add.text(0, 20, this.input.activePointer.y.toString());
     }
 
     update() {
         const pointer = this.input.activePointer;
         const cam = this.cameras.main;
 
+        this.cursorX.setText(this.input.activePointer.x.toString());
+        this.cursorY.setText(this.input.activePointer.y.toString());
+
         // Scroll right when mouse near right edge
-        if (pointer.x >= sizes.width - EDGE_ZONE) {
+        if (pointer.x >= sizes.width - EDGE_ZONE && cam.scrollX <= sizes.width - EDGE_ZONE) {
             const intensity = (pointer.x - (sizes.width - EDGE_ZONE)) / EDGE_ZONE;
             cam.scrollX += SCROLL_SPEED * intensity;
         }
@@ -53,13 +55,6 @@ class GameScene extends Phaser.Scene {
             const intensity = (EDGE_ZONE - pointer.x) / EDGE_ZONE;
             cam.scrollX -= SCROLL_SPEED * intensity;
         }
-
-        // Clamp so camera doesn't go out of world
-        cam.scrollX = Phaser.Math.Clamp(
-            cam.scrollX,
-            0,
-            WORLD_WIDTH - sizes.width
-        );
     }
 }
 
