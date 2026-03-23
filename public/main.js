@@ -22,14 +22,14 @@ class GameScene extends Phaser.Scene {
             this.cameras.main.scrollX -= (pointer.position.x - pointer.prevPosition.x);
             this.cameras.main.scrollY -= (pointer.position.y - pointer.prevPosition.y);
         });
-        
 
-        this.add.image(0, 0, "bg").setOrigin(0, 0);
+
+        this.back = this.add.image(0, 0, "bg").setOrigin(0, 0);
+        this.back.setScale(0.5);
 
         this.player = this.physics.add
             .image(0, sizes.height - 100, "basket")
             .setOrigin(0, 0);
-        // this.player.setImmovable(true);
         this.player.body.allowGravity = false;
         this.player.setCollideWorldBounds(true);
 
@@ -45,7 +45,7 @@ const speedDown = 300;
 
 const sizes = {
     width: 500,
-    height: 500
+    height: 540
 };
 
 const config = {
